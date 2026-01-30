@@ -1,0 +1,17 @@
+datasource db {
+    provider = "postgresql"
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../generated/prisma"
+}
+
+model Blogs {
+    id        String   @id @default(cuid())
+    title     String
+    content   String
+    username  String
+    likes     Int      @default(0)
+    createdAt DateTime @default(now())
+}
