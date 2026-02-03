@@ -1,118 +1,139 @@
-"use client"
+"use client";
 
-import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSet} from "@/components/ui/field";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import React, {useState} from "react";
-import {Button} from "@/components/ui/button";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ImageUploader } from "@/components/image_upload/uploader";
+import { uploadImage } from "@/lib/cloudinary";
+import { toast } from "sonner";
 import {createPost} from "@/app/Write/action";
-import { toast } from "sonner"
 
-export default function Write() {
-    const[title, setTitle] = useState("");
-    const[content, setContent] = useState("");
-    const[username, setUsername] = useState("");
-    const[isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState<Record<string, string[]>>({});
+export default function WriteBlog() {
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const onSubmit = async (e: React.SyntheticEvent) => {
+    const validForm = (): string | null => {
+        if (!title.trim()) {
+            return "Title is required";
+        }
+        if (!content.trim()) {
+            return "Content is required";
+        }
+        if (!selectedImage) {
+            return "Please upload an Image";
+        }
+        return null;
+    }
+
+    const handleSubmit = async (e: React.SyntheticEvent) => {
         e.preventDefault();
+        setError(null)
+
+        const validationError = validForm();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+
         setIsSubmitting(true);
-        setErrors({});
 
         try {
+            const imgUrl = await uploadImage(selectedImage!);
+
             const result = await createPost({
-                title,
-                content,
-                username
+                title: title,
+                content: title,
+                imageUrl: imgUrl,
             })
 
-            if (!result.success) {
-                setErrors(result.errors)
-                return
+            if(result.error) {
+                setError(result.error)
+                return;
             }
+
+            toast.success("Blog post created successfully.");
 
             setTitle("");
             setContent("");
-            setUsername("");
-
-            const showMessage = () => toast.success("Successfully created post!");
-            showMessage();
-        } catch(error) {
-            setErrors({
-                form: ["Failed to create Post"],
-            })
-            console.error(error)
+            setSelectedImage(null);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Failed to create blog post";
+            setError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
     }
 
-    const isFormValid = title.trim() && content.trim() && username.trim();
-
     return (
-        <div className="flex-1 flex justify-center px-4 sm:px-6 lg:px-8">
-            <div className="bg-white w-full max-w-2xl p-4 sm:p-6 lg:p-8 ">
-                <form onSubmit={onSubmit}>
-                    <FieldSet>
-                        <span className="block text-3xl sm:text-4xl font-bold text-center mt-4">
-                            Write Your Blog!
-                        </span>
+        <div className=" w-full">
+            <h1 className="text-4xl font-bold mb-3 mt-6 text-center">
+                Write your blog!
+            </h1>
+            <form
+                onSubmit={handleSubmit}
+                className="space-y-6 mx-auto p-6 w-[95%] md:w-[50%]"
+            >
+                <div>
+                    <Label
+                        htmlFor="title"
+                        className="font-semibold text-xl mb-1.5"
+                    >
+                        Title:
+                    </Label>
+                    <Input
+                        id="title"
+                        type="text"
+                        placeholder="Enter Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        disabled={isSubmitting}
+                    />
+                </div>
 
-                        <FieldDescription className="text-center text-sm sm:text-base">
-                            Everything you write will be anonymous
-                        </FieldDescription>
+                <div>
+                    <Label
+                        htmlFor="content"
+                        className="font-semibold text-xl mb-1.5"
+                    >
+                        Content:
+                    </Label>
+                    <Textarea
+                        id="content"
+                        placeholder="Write your blog content here..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        disabled={isSubmitting}
+                    />
+                </div>
 
-                        <FieldGroup className="space-y-4 mt-6">
-                            <Field>
-                                <FieldLabel>Title</FieldLabel>
-                                <Input
-                                    id="title"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                />
-                            </Field>
+                <div className="">
+                    <Label
+                        htmlFor="content"
+                        className="font-semibold text-xl mb-1.5"
+                    >
+                        Upload Thumbnail:
+                    </Label>
+                    <ImageUploader
+                        setSelectedImage={setSelectedImage}
+                        selectedImage={selectedImage}
+                    />
+                </div>
 
-                            <Field>
-                                <FieldLabel>Content</FieldLabel>
-                                <Textarea
-                                    id="content"
-                                    placeholder="Write your blog"
-                                    rows={8}
-                                    className="resize-y"
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                />
-                            </Field>
+                <div className="space-y-4">
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? "Publishing..." : "Publish Blog Post"}
+                    </Button>
+                    {error && (
+                        <p className="text-sm text-destructive text-center">{error}</p>
+                    )}
+                </div>
 
-                            <Field>
-                                <FieldLabel>Publish as</FieldLabel>
-                                <Input
-                                    id="username"
-                                    autoComplete="off"
-                                    value={username}
-                                    maxLength={153}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
-                            </Field>
-
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isSubmitting || !isFormValid}
-                            >
-                                {isSubmitting ? "Posting..." : "Post"}
-                            </Button>
-
-                            {errors.form && (
-                                <span className="text-red-500 text-sm text-center block">
-                                    {errors.form[0]}
-                                </span>
-                            )}
-                        </FieldGroup>
-                    </FieldSet>
-                </form>
-            </div>
+            </form>
         </div>
     )
 }

@@ -12,6 +12,8 @@ model Blogs {
     title     String
     content   String
     username  String
+    image     String
     likes     Int      @default(0)
+    dislikes  Int      @default(0)
     createdAt DateTime @default(now())
 }

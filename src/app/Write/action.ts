@@ -1,51 +1,47 @@
 "use server"
 
-import {prisma} from "@/lib/prisma";
 import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import generateName from "@/lib/generate-name";
 
-type createPostResult =
-    | { success: true}
-    | { success: false; errors: Record<string, string[]> };
+const createBlogSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().min(1, "Content is required"),
+    imageUrl: z.string()
+});
 
-const CreatePostSchema = z.object({
-    title: z.string().min(1).max(150),
-    content: z.string().min(1),
-    username: z.string().min(1).max(20)
-})
+export const createPost = async (
+    input: z.infer<typeof createBlogSchema>
+) => {
+    const parsed = createBlogSchema.safeParse(input);
 
-export async function createPost(
-    formData: z.infer<typeof CreatePostSchema>
-): Promise<createPostResult> {
-    
-    const parsed = CreatePostSchema.safeParse(formData);
-
-    if (!parsed.success) {
-        const { fieldErrors } = z.flattenError(parsed.error);
+    if(!parsed.success) {
         return {
             success: false,
-            errors: fieldErrors,
-        };
+            error: "Parsing error. Enter valid Title and content"
+        }
     }
 
-    const { title, content, username } = parsed.data;
+    const { title, content, imageUrl } = parsed.data;
+    const username = generateName()
 
     try {
         await prisma.blogs.create({
             data: {
-                title,
-                content,
-                username
+                title: title,
+                content: content,
+                image: imageUrl,
+                username: username,
             },
-        });
+        })
 
-        return { success: true };
-    } catch(error) {
-        console.error(error);
+        return {
+            success: true
+        }
+    } catch (error) {
         return {
             success: false,
-            errors: {
-                form: ["Error creating post"],
-            }
+            error: `Could not create post: ${error}`,
         }
     }
 }

@@ -1,13 +1,16 @@
 import {getBlogContent} from "@/app/blog/[slug]/actions";
 import {LikeButton} from "@/components/card/LikeButton";
-import {Avatar, AvatarImage} from "@/components/ui/avatar";
+import Avatar from "boring-avatars";
+import Image from "next/image";
+import {DislikeButton} from "@/components/card/DislikeButton";
+import {LikeAndDislike} from "@/components/card/LikeAndDislike";
 
 interface SlugProps {
     readonly params: Promise<{ slug: string}>
 }
 
 export default async function BlogPost({params} : SlugProps) {
-    const { slug } = await  params
+    const { slug } = await params
 
     const blogContent = await getBlogContent(slug);
 
@@ -17,21 +20,31 @@ export default async function BlogPost({params} : SlugProps) {
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-5 mb-5">
                     <article>
                         <div>
-                            <span className="text-5xl font-bold text-gray-900 font-">
+                            <span className="text-xl md:text-4xl font-bold text-gray-900 ">
                                 {blogContent.title}
                             </span>
-                            <div className="flex justify-between mt-3">
+                            <div className="flex justify-between my-3">
                                 <div className="flex justify-between items-center gap-x-1.5">
-                                    <Avatar className="w-8 h-8">
-                                        <AvatarImage src="/spy.png"/>
-                                    </Avatar>
+                                    <Avatar name={blogContent.username} variant="marble" size={30}/>
                                     <span className="text-lg ">{blogContent.username}</span>
                                 </div>
-                                <LikeButton blogID={blogContent.id} likes={blogContent.likes}/>
+                                <LikeAndDislike
+                                    likes={blogContent.likes}
+                                    dislikes={blogContent.dislikes}
+                                    blogId={blogContent.id}
+                                />
                             </div>
                         </div>
+                        <div className="relative h-96 w-full overflow-hidden rounded-lg">
+                            <Image
+                                src={blogContent.image}
+                                alt="thumbnail"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
 
-                        <p className="text-gray-700 leading-relaxed border-t border-black py-4 mt-2 whitespace-pre-wrap">
+                        <p className="text-gray-700 leading-relaxed py-4 mt-2 whitespace-pre-wrap">
                             {blogContent.content}
                         </p>
                     </article>

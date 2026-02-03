@@ -1,10 +1,10 @@
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import {LikeButton} from "@/components/card/LikeButton";
-import {
-    Avatar,
-    AvatarImage
-} from "@/components/ui/avatar";
+import Avatar from 'boring-avatars';
 import Link from "next/link";
+import {DislikeButton} from "@/components/card/DislikeButton";
+import Image from "next/image";
+import {LikeAndDislike} from "@/components/card/LikeAndDislike";
 
 interface BlogCardProps {
     readonly id: string
@@ -12,31 +12,41 @@ interface BlogCardProps {
     readonly content: string;
     readonly username: string;
     readonly likes: number;
+    readonly dislikes: number;
+    readonly image: string;
 }
 
 export function BlogCard(blogCardProps: BlogCardProps) {
     return (
-        <Card className="flex flex-col h-64 overflow-hidden p-0 gap-y-0 transition-transform duration-200 hover:scale-101">
-
-            <CardHeader className="h-[20%] flex items-center px-3">
-                <p className="text-xl font-bold mr-2 truncate">{blogCardProps.title}</p>
-            </CardHeader>
-            <CardContent className=" h-[60%] px-3 py-2 flex items-center">
-                <Link
-                    href={`/blog/${blogCardProps.id}`}
-                    className="block h-full cursor-default">
-                    <p className="whitespace-pre-wrap line-clamp-5">{blogCardProps.content}</p>
-                </Link>
-            </CardContent>
-            <CardFooter className="h-[20%] flex justify-between px-3 border-t-2  ">
-                <LikeButton blogID={blogCardProps.id} likes={blogCardProps.likes} />
-                <div className="flex justify-between items-center gap-x-1.5">
-                    <span className="text-md ">@{blogCardProps.username}</span>
-                    <Avatar className="w-8 h-8">
-                        <AvatarImage src="spy.png"/>
-                    </Avatar>
+        <Card className="flex flex-col border-0 p-0 rounded-lg overflow-hidden shadow-sm gap-y-0">
+            <div className=" ">
+                <div className="relative h-52 w-full overflow-hidden">
+                    <Image
+                        src={blogCardProps.image}
+                        alt="thumbnail"
+                        fill
+                        className="object-cover"
+                    />
                 </div>
-            </CardFooter>
+                <div className="font-semibold h-16 text-lg px-3 py-2 line-clamp-2">{blogCardProps.title}</div>
+            </div>
+            <Link
+                href={`/blog/${blogCardProps.id}`}
+                className="h-24 px-3 pt-2 flex items-start "
+            >
+                    <p className="whitespace-pre-wrap line-clamp-3">{blogCardProps.content}</p>
+            </Link>
+            <div className="h-16 flex justify-between px-3  ">
+                <LikeAndDislike
+                    likes={blogCardProps.likes}
+                    dislikes={blogCardProps.dislikes}
+                    blogId={blogCardProps.id}
+                />
+                <div className="flex justify-between items-center gap-x-1.5">
+                    <span className="text-sm ">@{blogCardProps.username}</span>
+                    <Avatar name={blogCardProps.username} variant="marble" size={26}/>
+                </div>
+            </div>
         </Card>
     )
 }
