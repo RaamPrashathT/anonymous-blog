@@ -123,3 +123,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Optional: Show scrollbar on hover */
+.scrollbar-default {
+  scrollbar-width: thin;
+}

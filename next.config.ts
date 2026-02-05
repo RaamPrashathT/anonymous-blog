@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: 'https',
+        hostname: 'avataaars.io',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 

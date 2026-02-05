@@ -7,7 +7,8 @@ import generateName from "@/lib/generate-name";
 const createBlogSchema = z.object({
     title: z.string().min(1, "Title is required"),
     content: z.string().min(1, "Content is required"),
-    imageUrl: z.string()
+    imageUrl: z.string(),
+    tag: z.string()
 });
 
 export const createPost = async (
@@ -22,7 +23,7 @@ export const createPost = async (
         }
     }
 
-    const { title, content, imageUrl } = parsed.data;
+    const { title, content, imageUrl, tag } = parsed.data;
     const username = generateName()
 
     try {
@@ -32,6 +33,7 @@ export const createPost = async (
                 content: content,
                 image: imageUrl,
                 username: username,
+                tag: tag,
             },
         })
 

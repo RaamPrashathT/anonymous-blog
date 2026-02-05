@@ -9,11 +9,21 @@ import { ImageUploader } from "@/components/image_upload/uploader";
 import { uploadImage } from "@/lib/cloudinary";
 import { toast } from "sonner";
 import {createPost} from "@/app/Write/action";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 
 export default function WriteBlog() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [tag, setTag] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -26,6 +36,9 @@ export default function WriteBlog() {
         }
         if (!selectedImage) {
             return "Please upload an Image";
+        }
+        if (!tag) {
+            return "Tag is required";
         }
         return null;
     }
@@ -47,8 +60,9 @@ export default function WriteBlog() {
 
             const result = await createPost({
                 title: title,
-                content: title,
+                content: content,
                 imageUrl: imgUrl,
+                tag: tag as string,
             })
 
             if(result.error) {
@@ -109,6 +123,32 @@ export default function WriteBlog() {
                         onChange={(e) => setContent(e.target.value)}
                         disabled={isSubmitting}
                     />
+                </div>
+
+                <div>
+                    <Label
+                        className="font-semibold text-xl mb-1.5"
+                    >
+                        Tag:
+                    </Label>
+                    <Select
+                        onValueChange={(value) => { setTag(value); }}
+                        disabled={isSubmitting}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue  placeholder="Add a tag"/>
+                        </SelectTrigger>
+                        <SelectContent  className="mt-7">
+                            <SelectGroup>
+                                <SelectLabel>Select Tags</SelectLabel>
+                                <SelectItem value="Tech">Tech</SelectItem>
+                                <SelectItem value="Exploration">Exploration</SelectItem>
+                                <SelectItem value="Thoughts">Thoughts</SelectItem>
+                                <SelectItem value="Food">Food</SelectItem>
+                                <SelectItem value="Driving">Driving</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="">

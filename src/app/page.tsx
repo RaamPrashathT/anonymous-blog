@@ -1,6 +1,5 @@
 "use client"
 
-import LightRays from "@/components/LightRays";
 import {redirect} from "next/navigation";
 
 export default function Home() {

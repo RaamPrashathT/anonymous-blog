@@ -1,9 +1,5 @@
-import { adjectives, names, uniqueNamesGenerator } from "unique-names-generator";
+import { human } from 'fantastical';
 
 export default function generateName(): string {
-    return uniqueNamesGenerator({
-        dictionaries: [adjectives, names],
-        separator: " ",
-        style: "capital",
-    });
+    return human();
 }
