@@ -3,7 +3,7 @@
 import {useSearchParams} from 'next/navigation'
 import {BlogCard} from "@/components/card/BlogCard";
 import {fetchFilteredBlogs} from "@/app/search/actions";
-import {useEffect, useState} from "react";
+import {useEffect, useState, Suspense} from "react";
 
 interface BlogCardProps {
     readonly id: string
@@ -16,7 +16,7 @@ interface BlogCardProps {
     readonly image: string;
 }
 
-export default function Search() {
+function SearchContent() {
     const searchParams = useSearchParams()
     const keyword = searchParams.get('keyword') ?? "";
     const filter = searchParams.get('filter') ?? "none";
@@ -53,5 +53,13 @@ export default function Search() {
             <p>nothing</p>
             }
         </div>
+    )
+}
+
+export default function Search() {
+    return (
+        <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-6">Loading...</div>}>
+            <SearchContent />
+        </Suspense>
     )
 }
