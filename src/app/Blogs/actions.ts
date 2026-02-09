@@ -12,7 +12,8 @@ export const getPosts = async (page: number = 1, limit: number = 10 ) => {
              take: limit,
              orderBy: {
                  createdAt: "desc"
-             }
+             },
+             
          }),
         prisma.blogs.count()
     ])

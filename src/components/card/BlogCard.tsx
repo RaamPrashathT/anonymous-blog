@@ -15,7 +15,7 @@ interface BlogCardProps {
     readonly username: string;
     readonly likes: number;
     readonly dislikes: number;
-    readonly tag: string;
+    readonly tags: string[];
     readonly image: string;
 }
 
@@ -39,7 +39,7 @@ export function BlogCard(blogCardProps: BlogCardProps) {
                 </div>
                 <div className="px-2 py-2">
                     <BadgeComponent
-                        value={blogCardProps.tag}
+                        value={blogCardProps.tags}
                     />
                 </div>
             </div>

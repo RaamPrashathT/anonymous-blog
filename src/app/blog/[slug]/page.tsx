@@ -2,6 +2,9 @@ import { getBlogContent } from "@/app/blog/[slug]/actions";
 import Image from "next/image";
 import { LikeAndDislike } from "@/components/card/LikeAndDislike";
 import { AvatarImg } from "@/components/card/AvatarImg";
+import { WriteComment } from "@/components/blog-comments/WriteComment";
+import { CommentSection } from "@/components/blog-comments/CommentSection";
+import { CrepeViewer } from "@/components/crepe/crepeViewer";
 
 interface SlugProps {
     readonly params: Promise<{ slug: string }>;
@@ -15,39 +18,50 @@ export default async function BlogPost({ params }: SlugProps) {
     if (blogContent) {
         return (
             <div className="w-full">
-                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-5 mb-5">
-                    <article>
-                        <div>
-                            <span className="text-xl md:text-4xl font-bold text-gray-900 ">
-                                {blogContent.title}
-                            </span>
-                            <div className="flex justify-between my-3">
-                                <div className="flex justify-between items-center gap-x-1.5">
-                                    <AvatarImg name={blogContent.username} />
-                                    <span className="text-lg ">
-                                        {blogContent.username}
-                                    </span>
+                <div className="mx-auto max-w-3xl px-4  pt-5 mb-5">
+                    <div>
+                        <article>
+                            <div>
+                                <span className="text-xl md:text-4xl font-bold text-gray-900 ">
+                                    {blogContent.title}
+                                </span>
+                                <div className="flex justify-between my-3">
+                                    <div className="flex justify-between items-center gap-x-1.5">
+                                        <AvatarImg name={blogContent.username} />
+                                        <span className="text-lg ">
+                                            {blogContent.username}
+                                        </span>
+                                    </div>
+                                    <LikeAndDislike
+                                        likes={blogContent.likes}
+                                        dislikes={blogContent.dislikes}
+                                        blogId={blogContent.id}
+                                    />
                                 </div>
-                                <LikeAndDislike
-                                    likes={blogContent.likes}
-                                    dislikes={blogContent.dislikes}
-                                    blogId={blogContent.id}
+                            </div>
+                            <div className="relative h-96 w-full overflow-hidden rounded-lg">
+                                <Image
+                                    src={blogContent.image}
+                                    alt="thumbnail"
+                                    fill
+                                    className="object-cover"
                                 />
                             </div>
-                        </div>
-                        <div className="relative h-96 w-full overflow-hidden rounded-lg">
-                            <Image
-                                src={blogContent.image}
-                                alt="thumbnail"
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
 
-                        <p className="text-gray-700 leading-relaxed py-4 mt-2 whitespace-pre-wrap">
-                            {blogContent.content}
-                        </p>
-                    </article>
+                            <div className="text-gray-700 leading-relaxed py-4 mt-2 whitespace-pre-wrap">
+                                <CrepeViewer content={blogContent.content} className="bg-red-200"/>
+                            </div>
+                        </article>
+                        <div className="mt-4">
+                            <div className="w-full flex justify-between items-center">
+                                <h1 className="mb-2 text-xl font-semibold">Comments:</h1>
+                                <p className="text-sm text-gray-500">{blogContent.comments.length} {blogContent.comments.length === 1 ? "comment" : "comments"}</p>
+                            </div>
+                            <WriteComment blogId={blogContent.id} />
+                            <CommentSection blogId={blogContent.id} />
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         );

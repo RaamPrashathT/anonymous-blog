@@ -5,5 +5,8 @@ export const getBlogContent = async (id: string) => {
         where:{
             id: id,
         },
+        include: {
+            comments: true
+        }
     })
 }

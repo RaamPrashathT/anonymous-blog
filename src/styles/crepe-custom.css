@@ -1,0 +1,58 @@
+
+.milkdown {
+  /* Backgrounds */
+
+  
+  --crepe-color-background: #ffffff; /* White background for editor */
+  --crepe-color-surface: #f8fafc; /* slate-50 for tooltips and menus */
+  --crepe-color-surface-low: #f1f5f9; /* slate-100 for subtle elements */
+  
+  /* Text colors - Black */
+  --crepe-color-on-background: #000000; /* Black text on background */
+  --crepe-color-on-surface: #000000; /* Black text on surfaces */
+  --crepe-color-on-surface-variant: #000000; /* Black variant text */
+  
+  /* Borders and outlines */
+  --crepe-color-outline: #000000; /* slate-200 for borders */
+  
+  /* Primary and secondary colors */
+  --crepe-color-primary: #0f172a; /* slate-900 for primary actions */
+  --crepe-color-secondary: #f8fafc; /* slate-50 for secondary */
+  --crepe-color-on-secondary: #000000; /* Black text on secondary */
+  
+  /* Inverse colors */
+  --crepe-color-inverse: #0f172a; /* slate-900 */
+  --crepe-color-on-inverse: #ffffff; /* White text on inverse */
+  
+  /* Code and error colors */
+  --crepe-color-inline-code: #dc2626; /* red-600 for inline code */
+  --crepe-color-error: #dc2626; /* red-600 for errors */
+  
+  /* Interaction states */
+  --crepe-color-hover: #f1f5f9; /* slate-100 for hover */
+  --crepe-color-selected: #e2e8f0; /* slate-200 for selected */
+  --crepe-color-inline-area: #cbd5e1; /* slate-300 for inline areas */
+
+  /* Fonts - Poppins */
+  --crepe-font-title: var(--font-poppins), 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --crepe-font-default: var(--font-poppins), 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --crepe-font-code: 'JetBrains Mono', Menlo, Monaco, 'Courier New', Courier, monospace;
+
+  /* Shadows - Keep original or customize */
+  --crepe-shadow-1:
+    0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+  --crepe-shadow-2:
+    0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3);
+}
+
+.milkdown .editor {
+    border: none;
+    margin-left: 2rem;
+    padding-left: 3rem;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.milkdown .editor p {
+  line-height: 1.6;
+}

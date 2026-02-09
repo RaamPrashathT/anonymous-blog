@@ -8,7 +8,7 @@ const createBlogSchema = z.object({
     title: z.string().min(1, "Title is required"),
     content: z.string().min(1, "Content is required"),
     imageUrl: z.string(),
-    tag: z.string()
+    tags: z.array(z.string()).min(1, "At least one tag is required"),
 });
 
 export const createPost = async (
@@ -23,7 +23,7 @@ export const createPost = async (
         }
     }
 
-    const { title, content, imageUrl, tag } = parsed.data;
+    const { title, content, imageUrl, tags } = parsed.data;
     const username = generateName()
 
     try {
@@ -33,7 +33,7 @@ export const createPost = async (
                 content: content,
                 image: imageUrl,
                 username: username,
-                tag: tag,
+                tags: tags,
             },
         })
 

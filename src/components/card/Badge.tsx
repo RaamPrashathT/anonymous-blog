@@ -1,7 +1,7 @@
 import {Badge} from "@/components/ui/badge";
 
 interface BadgeProps {
-    readonly value: string;
+    readonly value: string[];
 }
 
 export default function BadgeComponent({ value }: BadgeProps) {
@@ -15,11 +15,17 @@ export default function BadgeComponent({ value }: BadgeProps) {
         return "gray";
     }
     return (
-        <Badge
-            variant="secondary"
-            className={setBadgeColour(value)}
-        >
-            {value}
-        </Badge>
+        <div className="flex mt-1 gap-x-1.5">
+            {value.map((tag) => (
+                <Badge
+                    key={tag}
+                    variant="secondary"
+                    className={setBadgeColour(tag)}
+                >
+                    {tag}
+                </Badge>
+            ))}
+        </div>
+        
     )
 }

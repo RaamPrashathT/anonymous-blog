@@ -13,8 +13,21 @@ model Blogs {
     content   String
     username  String
     image     String
-    tag       String
+    tags      String[]
     likes     Int      @default(0)
     dislikes  Int      @default(0)
     createdAt DateTime @default(now())
+    comments Comments[]
+}
+
+model Comments {
+    id        String   @id @default(cuid())
+    blogId    String
+    content   String
+    username  String
+    likes     Int      @default(0)
+    dislikes  Int      @default(0)
+    createdAt DateTime @default(now())
+
+    blog Blogs @relation(fields: [blogId], references: [id], onDelete: Cascade)
 }

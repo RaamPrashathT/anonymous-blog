@@ -16,3 +16,18 @@ export const updateDislikeCount = async(id: string, amount: number) => {
         }
     })
 }
+
+export const updateCommentDislikeCount = async(id: string, amount: number) => {
+    if(amount === 0) {
+        return;
+    }
+
+    return prisma.comments.update({
+        where: {
+            id: id
+        },
+        data: {
+            dislikes: { increment : amount }
+        }
+    })
+}

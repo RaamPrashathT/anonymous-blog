@@ -1,55 +1,94 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ImageUploader } from "@/components/image_upload/uploader";
 import { uploadImage } from "@/lib/cloudinary";
 import { toast } from "sonner";
 import {createPost} from "@/app/Write/action";
+import { CrepeEditor } from '@/components/crepe/CrepeEditor'
+import { MilkdownProvider } from '@milkdown/react'
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue
-} from "@/components/ui/select";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { X } from "lucide-react"
+import {ImageUploader} from "@/components/image_upload/uploader"
+
+const tagList = [
+  "Tech",
+  "Exploration",
+  "Food",
+  "Thoughts",
+  "Driving",
+] as const
 
 export default function WriteBlog() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [tag, setTag] = useState<string | null>(null);
+    const [tags, setTags] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogError, setDialogError] = useState<string | null>(null);
 
-    const validForm = (): string | null => {
+    const validateTitleAndContent = (): string | null => {
         if (!title.trim()) {
             return "Title is required";
         }
         if (!content.trim()) {
             return "Content is required";
         }
+        return null;
+    }
+
+    const validateImageAndTags = (): string | null => {
         if (!selectedImage) {
-            return "Please upload an Image";
+            return "Please upload an image";
         }
-        if (!tag) {
-            return "Tag is required";
+        if (tags.length === 0) {
+            return "At least one tag is required";
         }
         return null;
     }
 
-    const handleSubmit = async (e: React.SyntheticEvent) => {
-        e.preventDefault();
-        setError(null)
+    useEffect(() => {
+        console.log("tags:", tags)
+    }, [tags])
 
-        const validationError = validForm();
+    const handlePublishClick = (e: React.SyntheticEvent) => {
+        e.preventDefault();
+        setError(null);
+        setDialogError(null);
+
+        const validationError = validateTitleAndContent();
         if (validationError) {
             setError(validationError);
+            return;
+        }
+
+        setIsDialogOpen(true);
+    }
+
+    const handleFinalSubmit = async () => {
+        setDialogError(null);
+
+        const validationError = validateImageAndTags();
+        if (validationError) {
+            setDialogError(validationError);
             return;
         }
 
@@ -62,11 +101,11 @@ export default function WriteBlog() {
                 title: title,
                 content: content,
                 imageUrl: imgUrl,
-                tag: tag as string,
+                tags: tags,
             })
 
             if(result.error) {
-                setError(result.error)
+                setDialogError(result.error);
                 return;
             }
 
@@ -75,105 +114,170 @@ export default function WriteBlog() {
             setTitle("");
             setContent("");
             setSelectedImage(null);
+            setTags([]);
+            setIsDialogOpen(false);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Failed to create blog post";
-            setError(errorMessage);
+            setDialogError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
     }
 
+    const handleTagSelect = (value: string) => {
+        if (!tags.includes(value)) {
+            setTags([...tags, value]);
+        }
+    }
+
+    const handleRemoveTag = (tagToRemove: string) => {
+        setTags(tags.filter(tag => tag !== tagToRemove));
+    }
+
+    const availableTags = tagList.filter(tag => !tags.includes(tag));
+
     return (
-        <div className=" w-full">
-            <h1 className="text-4xl font-bold mb-3 mt-6 text-center">
-                Write your blog!
-            </h1>
+        <div className="w-full px-16">
             <form
-                onSubmit={handleSubmit}
-                className="space-y-6 mx-auto p-6 w-[95%] md:w-[50%]"
+                onSubmit={handlePublishClick}
+                className="space-y-6 mx-auto p-6 w-[95%] text-2xl"
             >
-                <div>
-                    <Label
-                        htmlFor="title"
-                        className="font-semibold text-xl mb-1.5"
-                    >
-                        Title:
-                    </Label>
-                    <Input
-                        id="title"
-                        type="text"
-                        placeholder="Enter Title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        disabled={isSubmitting}
+                <div className="flex justify-between items-center w-full">
+                    <input
+                    id="title"
+                    type="text"
+                    placeholder="Enter Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    disabled={isSubmitting}
+                    className="
+                        p-0 text-5xl flex-1 min-w-0 focus:outline-none ml-20
+                    "
                     />
+
+                    <div>
+                        <Button 
+                            type="submit" 
+                            className="w-48 mr-20" 
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Publishing..." : "Publish Blog Post"}
+                        </Button>
+                        
+                        {error && (
+                            <p className="text-sm text-destructive text-center mt-2">{error}</p>
+                        )}
+                    </div>
                 </div>
 
-                <div>
-                    <Label
-                        htmlFor="content"
-                        className="font-semibold text-xl mb-1.5"
-                    >
-                        Content:
-                    </Label>
-                    <Textarea
-                        id="content"
-                        placeholder="Write your blog content here..."
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        disabled={isSubmitting}
-                    />
+                <div >
+                    <MilkdownProvider>
+                        <div className="container mx-auto p-0 bg-white">
+                            <CrepeEditor 
+                                onChange={setContent}
+                            />
+                        </div>
+                    </MilkdownProvider>
                 </div>
-
-                <div>
-                    <Label
-                        className="font-semibold text-xl mb-1.5"
-                    >
-                        Tag:
-                    </Label>
-                    <Select
-                        onValueChange={(value) => { setTag(value); }}
-                        disabled={isSubmitting}
-                    >
-                        <SelectTrigger className="w-full">
-                            <SelectValue  placeholder="Add a tag"/>
-                        </SelectTrigger>
-                        <SelectContent  className="mt-7">
-                            <SelectGroup>
-                                <SelectLabel>Select Tags</SelectLabel>
-                                <SelectItem value="Tech">Tech</SelectItem>
-                                <SelectItem value="Exploration">Exploration</SelectItem>
-                                <SelectItem value="Thoughts">Thoughts</SelectItem>
-                                <SelectItem value="Food">Food</SelectItem>
-                                <SelectItem value="Driving">Driving</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div className="">
-                    <Label
-                        htmlFor="content"
-                        className="font-semibold text-xl mb-1.5"
-                    >
-                        Upload Thumbnail:
-                    </Label>
-                    <ImageUploader
-                        setSelectedImage={setSelectedImage}
-                        selectedImage={selectedImage}
-                    />
-                </div>
-
-                <div className="space-y-4">
-                    <Button type="submit" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Publishing..." : "Publish Blog Post"}
-                    </Button>
-                    {error && (
-                        <p className="text-sm text-destructive text-center">{error}</p>
-                    )}
-                </div>
-
             </form>
+
+            {/* Dialog for Image and Tags */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[600px]">
+                    <DialogHeader>
+                        <DialogTitle>Complete Your Blog Post</DialogTitle>
+                        <DialogDescription>
+                            Add a thumbnail image and select tags for your blog post.
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="space-y-6 py-4">
+                        {/* Tags Section */}
+                        <div className="space-y-3">
+                            <Label className="font-semibold text-lg">
+                                Tags *
+                            </Label>
+                            
+                            {/* Selected Tags Display */}
+                            {tags.length > 0 && (
+                                <div className="flex flex-wrap gap-2 p-3 border rounded-md ">
+                                    {tags.map((tag) => (
+                                        <Badge 
+                                            key={tag} 
+                                            variant="secondary"
+                                            className="px-3 py-1 text-sm"
+                                        >
+                                            {tag}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveTag(tag)}
+                                                className="ml-2 hover:text-destructive"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Dropdown to Add Tags */}
+                            {availableTags.length > 0 && (
+                                <Select onValueChange={handleTagSelect}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a tag to add..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableTags.map((tag) => (
+                                            <SelectItem key={tag} value={tag}>
+                                                {tag}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                            
+                            {tags.length === tagList.length && (
+                                <p className="text-sm text-muted-foreground">
+                                    All tags have been selected
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Image Upload Section */}
+                        <div>
+                            <Label className="font-semibold text-lg mb-2 block">
+                                Upload Thumbnail *
+                            </Label>
+                            <ImageUploader
+                                setSelectedImage={setSelectedImage}
+                                selectedImage={selectedImage}
+                            />
+                        </div>
+
+                        {dialogError && (
+                            <p className="text-sm text-destructive text-center">{dialogError}</p>
+                        )}
+                    </div>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleFinalSubmit}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Publishing..." : "Publish"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

@@ -12,7 +12,7 @@ interface BlogCardProps {
     readonly username: string;
     readonly likes: number;
     readonly dislikes: number;
-    readonly tag: string;
+    readonly tags: string[];
     readonly image: string;
 }
 
@@ -44,7 +44,7 @@ function SearchContent() {
                         likes={post.likes}
                         dislikes={post.dislikes}
                         username={post.username}
-                        tag={post.tag}
+                        tags={post.tags}
                         image={post.image}
                     />
                 ))}

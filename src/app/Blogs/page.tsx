@@ -55,7 +55,7 @@ export default async function Blogs({
                             likes={post.likes}
                             dislikes={post.dislikes}
                             username={post.username}
-                            tag={post.tag}
+                            tags={post.tags}
                             image={post.image}
                         />
                     ))}
