@@ -3,7 +3,6 @@ import { BlogCard } from "@/components/card/BlogCard";
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -17,39 +16,15 @@ export default async function TrendingPage({
 }: {
     readonly searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-    const resolvedSearchParams = await searchParams;
-
-    const rawPage = resolvedSearchParams.page ?? "1";
-    const page = Number.parseInt(rawPage, 10);
-    const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+    const { page: pageParam, tag } = await searchParams;
+    const page = Math.max(1, Number(pageParam) || 1);
     const limit = 9;
 
-    const tag = resolvedSearchParams.tag ?? null;
-    const tagQuery = tag ? `&tag=${encodeURIComponent(tag)}` : "";
-
-    const { posts, total } = await getTrendingPosts(safePage, limit, tag);
+    const { posts, total } = await getTrendingPosts(page, limit, tag ?? null);
     const totalPages = Math.ceil(total / limit);
 
     const tagsArray = ["Tech", "Exploration", "Thoughts", "Food", "Driving"];
-
-    const getVisiblePages = () => {
-        if (totalPages <= 3) {
-            return Array.from({ length: totalPages }, (_, i) => i + 1);
-        }
-
-        if (safePage === 1) {
-            return [1, 2, 3];
-        } else if (safePage === totalPages) {
-            return [totalPages - 2, totalPages - 1, totalPages];
-        } else {
-            return [safePage - 1, safePage, safePage + 1];
-        }
-    };
-
-    const visiblePages = getVisiblePages();
-    const showLeftEllipsis = visiblePages[0] > 1;
-    const showRightEllipsis =
-        visiblePages[visiblePages.length - 1] < totalPages;
+    const tagQuery = tag ? `&tag=${tag}` : "";
 
     return (
         <div className="flex flex-col w-full">
@@ -99,38 +74,37 @@ export default async function TrendingPage({
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious
-                                href={`?page=${Math.max(1, safePage - 1)}${tagQuery}`}
+                                href={`?page=${Math.max(1, page - 1)}${tagQuery}`}
                                 className={
-                                    safePage <= 1
+                                    page <= 1
                                         ? "pointer-events-none opacity-50"
                                         : ""
                                 }
                             />
                         </PaginationItem>
 
-                        {showLeftEllipsis && <PaginationEllipsis />}
-
-                        {visiblePages.map((p) => (
-                            <PaginationItem key={p}>
-                                <PaginationLink
-                                    href={`?page=${p}${tagQuery}`}
-                                    isActive={p === safePage}
-                                >
-                                    {p}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-
-                        {showRightEllipsis && <PaginationEllipsis />}
-
+                        
+                        {Array.from({ length: totalPages }).map((_, i) => {
+                            const p = i + 1;
+                            return (
+                                <PaginationItem key={p}>
+                                    <PaginationLink
+                                        href={`?page=${p}${tagQuery}`}
+                                        isActive={p === page}
+                                    >
+                                        {p}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            );
+                        })}
                         <PaginationItem>
                             <PaginationNext
                                 href={`?page=${Math.min(
                                     totalPages,
-                                    safePage + 1,
+                                    page + 1,
                                 )}${tagQuery}`}
                                 className={
-                                    safePage >= totalPages
+                                    page >= totalPages
                                         ? "pointer-events-none opacity-50"
                                         : ""
                                 }

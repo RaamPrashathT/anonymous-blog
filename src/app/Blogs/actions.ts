@@ -20,6 +20,7 @@ export const getPosts = async (page: number = 1, limit: number = 10 ) => {
 
     return {
         posts,
-        total
+        totalPages: Math.ceil(total / limit)
+    
     }
 }
