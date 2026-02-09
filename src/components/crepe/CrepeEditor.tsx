@@ -11,7 +11,7 @@ interface CrepeEditorProps {
   readonly onChange?: (markdown: string) => void
 }
 
-export function CrepeEditor({ value = '', onChange }: CrepeEditorProps) {
+export function CrepeEditor({ value = '', onChange, }: CrepeEditorProps) {
   useEditor((root) => {
     const crepe = new Crepe({
       root,

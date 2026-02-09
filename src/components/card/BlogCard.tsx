@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import {Card,} from "@/components/ui/card";
-import { AvatarGenerator } from 'random-avatar-generator';
+import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import {LikeAndDislike} from "@/components/card/LikeAndDislike";
+import { LikeAndDislike } from "@/components/card/LikeAndDislike";
 import BadgeComponent from "@/components/card/Badge";
-import {useState} from "react";
+import * as markdownToTxt from "markdown-to-txt";
+import { AvatarImg } from "./AvatarImg";
 
 interface BlogCardProps {
-    readonly id: string
+    readonly id: string;
     readonly title: string;
     readonly content: string;
     readonly username: string;
@@ -19,13 +19,7 @@ interface BlogCardProps {
     readonly image: string;
 }
 
-const generator = new AvatarGenerator();
-
 export function BlogCard(blogCardProps: BlogCardProps) {
-    const [avatar] = useState<string>(() =>
-        generator.generateRandomAvatar(blogCardProps.username)
-    );
-
     return (
         <Card className="border-0 p-0 rounded-lg overflow-hidden shadow-sm grid grid-rows-[auto_1fr_auto] gap-y-0">
             <div>
@@ -38,9 +32,7 @@ export function BlogCard(blogCardProps: BlogCardProps) {
                     />
                 </div>
                 <div className="px-2 py-2">
-                    <BadgeComponent
-                        value={blogCardProps.tags}
-                    />
+                    <BadgeComponent value={blogCardProps.tags} />
                 </div>
             </div>
             <Link
@@ -51,7 +43,7 @@ export function BlogCard(blogCardProps: BlogCardProps) {
                     {blogCardProps.title}
                 </div>
                 <p className="whitespace-pre-wrap line-clamp-3">
-                    {blogCardProps.content}
+                    {markdownToTxt.default(blogCardProps.content)}
                 </p>
             </Link>
             <div className="h-16 flex justify-between px-3 ">
@@ -63,18 +55,9 @@ export function BlogCard(blogCardProps: BlogCardProps) {
                 <div className="flex justify-between items-center gap-x-1.5">
                     <span className="text-sm">@{blogCardProps.username}</span>
 
-                    {avatar && (
-                        <Image
-                            src={avatar}
-                            alt="avatar"
-                            width={28}
-                            height={28}
-                            unoptimized
-                            className="rounded-full"
-                        />
-                    )}
+                    <AvatarImg name={blogCardProps.username} />
                 </div>
             </div>
         </Card>
-    )
+    );
 }

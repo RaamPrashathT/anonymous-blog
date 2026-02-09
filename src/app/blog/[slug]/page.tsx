@@ -3,7 +3,6 @@ import Image from "next/image";
 import { LikeAndDislike } from "@/components/card/LikeAndDislike";
 import { AvatarImg } from "@/components/card/AvatarImg";
 import { WriteComment } from "@/components/blog-comments/WriteComment";
-import { CommentSection } from "@/components/blog-comments/CommentSection";
 import { CrepeViewer } from "@/components/crepe/crepeViewer";
 
 interface SlugProps {
@@ -53,12 +52,8 @@ export default async function BlogPost({ params }: SlugProps) {
                             </div>
                         </article>
                         <div className="mt-4">
-                            <div className="w-full flex justify-between items-center">
-                                <h1 className="mb-2 text-xl font-semibold">Comments:</h1>
-                                <p className="text-sm text-gray-500">{blogContent.comments.length} {blogContent.comments.length === 1 ? "comment" : "comments"}</p>
-                            </div>
-                            <WriteComment blogId={blogContent.id} />
-                            <CommentSection blogId={blogContent.id} />
+                            <WriteComment blogId={blogContent.id} commentSum={blogContent.comments.length} />
+                            
                         </div>
                     </div>
                     

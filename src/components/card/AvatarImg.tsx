@@ -1,26 +1,18 @@
-import { AvatarGenerator } from "random-avatar-generator";
+import { generateAvatar } from "@/lib/avatar";
 import Image from "next/image";
-import { useMemo } from "react";
 
-const generator = new AvatarGenerator();
+interface AvatarImgProps {
+    readonly name: string;
+    readonly size?: number;
+}
 
-type AvatarImgProps = {
-    readonly name : string;
-};
-
-
-export function AvatarImg({ name }: AvatarImgProps) {
-    const avatar = useMemo(
-        () => generator.generateRandomAvatar(name),
-        [name]
-    );
-
+export function AvatarImg({ name, size = 28 }: AvatarImgProps) {
     return (
         <Image
-            src={avatar}
+            src={generateAvatar(name)}
             alt={`${name}'s avatar`}
-            width={28}
-            height={28}
+            width={size}
+            height={size}
             unoptimized
             className="rounded-full"
         />

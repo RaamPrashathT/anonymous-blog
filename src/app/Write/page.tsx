@@ -10,7 +10,6 @@ import { MilkdownProvider } from '@milkdown/react'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -37,6 +36,7 @@ const tagList = [
 
 export default function WriteBlog() {
     const [title, setTitle] = useState("");
+    const [editorKey, setEditorKey] = useState(0)
     const [content, setContent] = useState("");
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [tags, setTags] = useState<string[]>([]);
@@ -113,6 +113,7 @@ export default function WriteBlog() {
 
             setTitle("");
             setContent("");
+            setEditorKey(prev => prev + 1)
             setSelectedImage(null);
             setTags([]);
             setIsDialogOpen(false);
@@ -174,6 +175,7 @@ export default function WriteBlog() {
                     <MilkdownProvider>
                         <div className="container mx-auto p-0 bg-white">
                             <CrepeEditor 
+                                key={editorKey}
                                 onChange={setContent}
                             />
                         </div>
@@ -181,26 +183,40 @@ export default function WriteBlog() {
                 </div>
             </form>
 
-            {/* Dialog for Image and Tags */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-150">
                     <DialogHeader>
                         <DialogTitle>Complete Your Blog Post</DialogTitle>
-                        <DialogDescription>
-                            Add a thumbnail image and select tags for your blog post.
-                        </DialogDescription>
+                        <div>
+                            <p className="mb-1">Give thumbnail image and select tags to complete.</p>
+                            <p className="text-orange-500">Disclaimer: This blog cannot be deleted or changed in the future.</p>
+                        </div>
                     </DialogHeader>
                     
                     <div className="space-y-6 py-4">
-                        {/* Tags Section */}
                         <div className="space-y-3">
                             <Label className="font-semibold text-lg">
-                                Tags *
+                                Tags:
                             </Label>
                             
-                            {/* Selected Tags Display */}
+                            
+                            {availableTags.length > 0 && (
+                                <Select onValueChange={handleTagSelect}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a tag to add..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableTags.map((tag) => (
+                                            <SelectItem key={tag} value={tag}>
+                                                {tag}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                            
                             {tags.length > 0 && (
-                                <div className="flex flex-wrap gap-2 p-3 border rounded-md ">
+                                <div className="flex flex-wrap gap-2   rounded-md ">
                                     {tags.map((tag) => (
                                         <Badge 
                                             key={tag} 
@@ -219,23 +235,7 @@ export default function WriteBlog() {
                                     ))}
                                 </div>
                             )}
-                            
-                            {/* Dropdown to Add Tags */}
-                            {availableTags.length > 0 && (
-                                <Select onValueChange={handleTagSelect}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select a tag to add..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {availableTags.map((tag) => (
-                                            <SelectItem key={tag} value={tag}>
-                                                {tag}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                            
+
                             {tags.length === tagList.length && (
                                 <p className="text-sm text-muted-foreground">
                                     All tags have been selected
@@ -243,10 +243,9 @@ export default function WriteBlog() {
                             )}
                         </div>
 
-                        {/* Image Upload Section */}
                         <div>
                             <Label className="font-semibold text-lg mb-2 block">
-                                Upload Thumbnail *
+                                Upload Thumbnail:
                             </Label>
                             <ImageUploader
                                 setSelectedImage={setSelectedImage}

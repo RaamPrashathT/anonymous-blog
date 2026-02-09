@@ -16,9 +16,10 @@ type Comment = {
 
 interface CommentSectionProps {
     readonly blogId: string
+    readonly tick: number
 }
 
-export function CommentSection({ blogId }: CommentSectionProps) {
+export function CommentSection({ blogId, tick }: CommentSectionProps) {
     const [comments, setComments] = useState<Comment[]>([])
 
     useEffect(() => {
@@ -26,8 +27,9 @@ export function CommentSection({ blogId }: CommentSectionProps) {
             const comments = await getCommentsByBlogId(blogId)
             setComments(comments)
         }
+        console.log(tick)
         void fetchComments();
-    }, [blogId])
+    }, [blogId, tick])
 
     return (
         <div>
