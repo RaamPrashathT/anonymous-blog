@@ -8,16 +8,17 @@ generator client {
 }
 
 model Blogs {
-    id        String   @id @default(cuid())
-    title     String
-    content   String
-    username  String
-    image     String
-    tags      String[]
-    likes     Int      @default(0)
-    dislikes  Int      @default(0)
-    createdAt DateTime @default(now())
-    comments Comments[]
+    id            String     @id @default(cuid())
+    title         String
+    content       String
+    username      String
+    image         String
+    tags          String[]
+    likes         Int        @default(0)
+    dislikes      Int        @default(0)
+    trendingScore Float      @default(0)
+    createdAt     DateTime   @default(now())
+    comments      Comments[]
 }
 
 model Comments {

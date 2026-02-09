@@ -18,7 +18,7 @@ export default async function BlogPost({ params }: SlugProps) {
     if (blogContent) {
         return (
             <div className="w-full">
-                <div className="mx-auto max-w-3xl px-4  pt-5 mb-5">
+                <div className="mx-auto max-w-3xl pt-5 mb-5">
                     <div>
                         <article>
                             <div>
@@ -49,7 +49,7 @@ export default async function BlogPost({ params }: SlugProps) {
                             </div>
 
                             <div className="text-gray-700 leading-relaxed py-4 mt-2 whitespace-pre-wrap">
-                                <CrepeViewer content={blogContent.content} className="bg-red-200"/>
+                                <CrepeViewer content={blogContent.content} className="bg-red-200 p-0"/>
                             </div>
                         </article>
                         <div className="mt-4">

@@ -31,7 +31,7 @@ function CrepeViewerInner({ content, className = '' }: CrepeViewerProps) {
   }, [content])
 
   return (
-    <div className={`crepe-viewer prose prose-slate max-w-none ${className}`}>
+    <div className={`crepe-viewer prose prose-slate max-w-none b ${className}`}>
       <Milkdown />
     </div>
   )

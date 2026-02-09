@@ -5,15 +5,16 @@ import React, {useEffect, useRef, useState} from "react";
 import {useDebounce} from "@/hooks/useDebounce";
 import {updateCommentDislikeCount} from "@/lib/dislikes";
 import {updateCommentLikeCount} from "@/lib/likes";
+import { setTrendingScore } from "@/lib/trendingScore";
 
 interface CommentLikeAndDislikeProps {
-    readonly blogId: string;
+    readonly commentId: string;
     readonly likes: number
     readonly dislikes: number
 }
 
 export function CommentLikeAndDislike({
-    blogId,
+    commentId,
     likes,
     dislikes,
 }: CommentLikeAndDislikeProps) {
@@ -28,14 +29,15 @@ export function CommentLikeAndDislike({
     const debouncedLikeCount = useDebounce(likeCount, 500);
     const debouncedDislikeCount = useDebounce(dislikeCount, 500);
 
-    const firstRender = useRef(true);
+    const firstLikeRender = useRef(true);
+    const firstDislikeRender = useRef(true);
     const lastSyncLikeCount = useRef(likes);
     const lastSyncDislikeCount = useRef(dislikes);
 
     useEffect(() => {
         const setLikeCount = async() => {
-            if(firstRender.current) {
-                firstRender.current = false
+            if(firstLikeRender.current) {
+                firstLikeRender.current = false
                 return
             }
 
@@ -43,22 +45,24 @@ export function CommentLikeAndDislike({
 
             if(delta !== 0) {
                 try {
-                    await updateCommentLikeCount(blogId, delta);
+                    await updateCommentLikeCount(commentId, delta);
                     lastSyncLikeCount.current = debouncedLikeCount
                 } catch {
                     console.error("Failed to update like count")
+                } finally {
+                    await setTrendingScore(commentId, "comment")
                 }
             }
 
         }
 
         void setLikeCount()
-    }, [blogId, debouncedLikeCount]);
+    }, [commentId, debouncedLikeCount]);
 
     useEffect(() => {
         const setDislikeCount = async() => {
-            if(firstRender.current) {
-                firstRender.current = false
+            if(firstDislikeRender.current) {
+                firstDislikeRender.current = false
                 return;
             }
 
@@ -66,15 +70,17 @@ export function CommentLikeAndDislike({
 
             if(delta !== 0) {
                 try {
-                    await updateCommentDislikeCount(blogId, delta);
+                    await updateCommentDislikeCount(commentId, delta);
                     lastSyncDislikeCount.current = debouncedDislikeCount
                 } catch {
                     console.error("Failed to update dislike count");
+                } finally {
+                    await setTrendingScore(commentId, "comment")
                 }
             }
         }
         void setDislikeCount()
-    }, [blogId, debouncedDislikeCount]);
+    }, [commentId, debouncedDislikeCount]);
 
     const handleDislike = () => {
         if(isLiked) {

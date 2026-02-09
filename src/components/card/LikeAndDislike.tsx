@@ -5,6 +5,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {useDebounce} from "@/hooks/useDebounce";
 import {updateDislikeCount} from "@/lib/dislikes";
 import {updateLikeCount} from "@/lib/likes";
+import { setTrendingScore } from "@/lib/trendingScore";
 
 interface LikeAndDislikeProps {
     readonly blogId: string;
@@ -28,14 +29,15 @@ export function LikeAndDislike({
     const debouncedLikeCount = useDebounce(likeCount, 500);
     const debouncedDislikeCount = useDebounce(dislikeCount, 500);
 
-    const firstRender = useRef(true);
+    const firstLikeRender = useRef(true);
+    const firstDislikeRender = useRef(true);
     const lastSyncLikeCount = useRef(likes);
     const lastSyncDislikeCount = useRef(dislikes);
 
     useEffect(() => {
         const setLikeCount = async() => {
-            if(firstRender.current) {
-                firstRender.current = false
+            if(firstLikeRender.current) {
+                firstLikeRender.current = false
                 return
             }
 
@@ -45,20 +47,24 @@ export function LikeAndDislike({
                 try {
                     await updateLikeCount(blogId, delta);
                     lastSyncLikeCount.current = debouncedLikeCount
+                    
                 } catch {
                     console.error("Failed to update like count")
+                } finally {
+                    await setTrendingScore(blogId)
                 }
             }
 
         }
+        
 
         void setLikeCount()
     }, [blogId, debouncedLikeCount]);
 
     useEffect(() => {
         const setDislikeCount = async() => {
-            if(firstRender.current) {
-                firstRender.current = false
+            if(firstDislikeRender.current) {
+                firstDislikeRender.current = false
                 return;
             }
 
@@ -70,6 +76,8 @@ export function LikeAndDislike({
                     lastSyncDislikeCount.current = debouncedDislikeCount
                 } catch {
                     console.error("Failed to update dislike count");
+                } finally {
+                    await setTrendingScore(blogId)
                 }
             }
         }

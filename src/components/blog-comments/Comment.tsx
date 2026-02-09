@@ -43,7 +43,7 @@ export function CommentCard({id, content, username, createdAt, likes, dislikes }
                     <CommentLikeAndDislike
                         likes={likes}
                         dislikes={dislikes}
-                        blogId={id}
+                        commentId={id}
                     />
                 </div>
             <p className="mt-2 pl-1">{content}</p>
