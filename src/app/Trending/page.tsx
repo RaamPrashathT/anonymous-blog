@@ -34,7 +34,7 @@ export default async function TrendingPage({
                         Trending Posts:
                     </Button>
                 </Link>
-
+                
                 <div className="flex items-center flex-wrap">
                     <p className="pr-3 text-xl mt-4 font-bold">Tags:</p>
 
@@ -50,6 +50,7 @@ export default async function TrendingPage({
                     ))}
                 </div>
             </div>
+            
 
             <div className="mx-auto max-w-7xl px-4 py-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
