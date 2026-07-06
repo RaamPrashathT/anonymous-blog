@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@milkdown/crepe": "^7.18.0",
+    "@milkdown/plugin-listener": "^7.21.2",
     "@milkdown/react": "^7.18.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
