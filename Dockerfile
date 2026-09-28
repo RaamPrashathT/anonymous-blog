@@ -15,6 +15,8 @@ COPY --chown=nextjs:nodejs .next/standalone ./
 COPY --chown=nextjs:nodejs .next/static ./.next/static
 COPY --chown=nextjs:nodejs public ./public
 
+RUN npm install --no-package-lock --no-save --legacy-peer-deps @swc/helpers
+
 USER nextjs
 
 EXPOSE 3004
